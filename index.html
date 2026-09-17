@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matemáticas · Actividades adaptadas</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20242a}
+  .app{max-width:1100px;margin:auto;padding:18px}
+  header{background:white;border-radius:18px;padding:18px 22px;box-shadow:0 3px 12px #0001;margin-bottom:16px}
+  h1{margin:0 0 5px;font-size:28px}.subtitle{color:#59636e}
+  .days{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+  button,.choice{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:11px 16px}
+  .day{background:#e8edf2}.day.active{background:#315f8c;color:white}
+  .progress{height:10px;background:#dfe4e8;border-radius:20px;margin:16px 0 0;overflow:hidden}
+  .bar{height:100%;background:#315f8c;width:0;transition:.3s}
+  .screen{background:white;border-radius:18px;padding:25px;min-height:560px;box-shadow:0 3px 12px #0001}
+  .screen h2{margin-top:0;font-size:25px}.instruction{font-size:21px;margin:15px 0}
+  .task{background:#f8fafb;border:2px solid #e3e8ed;border-radius:16px;padding:22px;margin:18px 0}
+  .big{font-size:42px;text-align:center;margin:18px 0}
+  .items{font-size:45px;letter-spacing:8px;text-align:center;margin:18px}
+  .options{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+  .choice{background:#e7edf3;font-size:22px;min-width:90px}.choice:hover{background:#d8e3ec}
+  .choice.selected{outline:4px solid #315f8c}
+  input{font-size:24px;padding:10px;border:2px solid #bcc6cf;border-radius:10px;width:130px;text-align:center}
+  .actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+  .primary{background:#315f8c;color:white}.secondary{background:#e7edf3}
+  .feedback{text-align:center;min-height:35px;font-size:20px;font-weight:bold}
+  .ok{color:#217346}.bad{color:#a52b2b}.hint{color:#59636e;font-size:16px}
+  .coins{font-size:48px;text-align:center}.store{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .product{background:white;border:2px solid #dce2e7;border-radius:14px;padding:15px;text-align:center;font-size:20px}
+  .emoji{font-size:42px}.answerline{text-align:center;margin:15px}
+  .shape{font-size:75px;text-align:center}
+  .summary{text-align:center;padding:25px}.score{font-size:48px;margin:20px}
+  .visually-hidden{position:absolute;left:-9999px}
+  @media(max-width:650px){.screen{padding:16px}.big{font-size:34px}.items{font-size:35px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>Matemáticas · Actividades adaptadas</h1>
+  <div class="subtitle">Tres días de actividades interactivas · números, cálculo, dinero y geometría</div>
+  <div class="days" id="days"></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</header>
+<main class="screen" id="screen"></main>
+</div>
+
+<script>
+const days = [
+ {name:"Día 1 · Conocemos las matemáticas", tasks:[
+  {type:"choice",title:"Mi número",q:"Señala el número 7.",options:["3","7","10","14"],answer:"7"},
+  {type:"choice",title:"Mi número",q:"¿Qué número es este?",show:"14",options:["4","10","14","18"],answer:"14"},
+  {type:"match",title:"Cuenta y elige",q:"¿Cuántas manzanas hay?",items:"🍎 🍎 🍎 🍎",options:["2","3","4","5"],answer:"4"},
+  {type:"choice",title:"¿Dónde hay más?",q:"¿Qué grupo tiene más?",items:"🟢🟢🟢🟢🟢   🔵🔵🔵",options:["Verde","Azul","Igual"],answer:"Verde"},
+  {type:"choice",title:"¿Dónde hay menos?",q:"¿Qué grupo tiene menos?",items:"🟢🟢   🔵🔵🔵🔵",options:["Verde","Azul","Igual"],answer:"Verde"},
+  {type:"calc",title:"Sumamos",q:"2 + 3 =",answer:"5"},
+  {type:"calc",title:"Sumamos",q:"4 + 1 =",answer:"5"},
+  {type:"calc",title:"Sumamos",q:"3 + 3 =",answer:"6"}
+ ]},
+ {name:"Día 2 · Los números hasta 100",tasks:[
+  {type:"calc",title:"Completa la serie",q:"1 · 2 · 3 · ___ · 5",answer:"4"},
+  {type:"calc",title:"Completa la serie",q:"10 · 11 · 12 · ___ · 14",answer:"13"},
+  {type:"calc",title:"Completa la serie",q:"20 · 21 · ___ · 23 · 24",answer:"22"},
+  {type:"two",title:"Anterior y posterior",q:"Número: 8",labels:["Anterior","Posterior"],answers:["7","9"]},
+  {type:"two",title:"Anterior y posterior",q:"Número: 12",labels:["Anterior","Posterior"],answers:["11","13"]},
+  {type:"choice",title:"Decenas y unidades",q:"¿Cómo podemos formar 14?",options:["10 + 4","10 + 5","20 + 4"],answer:"10 + 4"},
+  {type:"choice",title:"¿Cuál es mayor?",q:"5  ○  8",options:[">","<","="],answer:"<"},
+  {type:"choice",title:"¿Cuál es mayor?",q:"7  ○  7",options:[">","<","="],answer:"="},
+  {type:"calc",title:"Sumamos",q:"6 + 3 =",answer:"9"},
+  {type:"calc",title:"Restamos",q:"8 − 3 =",answer:"5"},
+  {type:"calc",title:"Restamos",q:"9 − 4 =",answer:"5"}
+ ]},
+ {name:"Día 3 · Matemáticas de la vida diaria",tasks:[
+  {type:"choice",title:"Las monedas",q:"¿Cuánto dinero hay?",coins:"🪙 2 €",options:["1 €","2 €","5 €"],answer:"2 €"},
+  {type:"choice",title:"Las monedas",q:"¿Cuánto dinero hay?",coins:"🪙 5 €",options:["2 €","5 €","10 €"],answer:"5 €"},
+  {type:"choice",title:"La tienda",q:"Un lápiz cuesta 1 €. ¿Cuánto pagamos?",options:["1 €","2 €","3 €"],answer:"1 €"},
+  {type:"choice",title:"La tienda",q:"Un lápiz cuesta 1 € y una regla 2 €. ¿Cuánto pagamos?",options:["2 €","3 €","4 €"],answer:"3 €"},
+  {type:"choice",title:"La tienda",q:"Tengo 5 €. Compro un cuaderno de 2 €. ¿Cuánto me queda?",options:["2 €","3 €","4 €"],answer:"3 €"},
+  {type:"choice",title:"Problema",q:"Juan tiene 🍎🍎🍎 y le dan 🍎🍎. ¿Cuántas tiene ahora?",options:["4","5","6"],answer:"5"},
+  {type:"choice",title:"Problema",q:"Hay 🚗🚗🚗🚗🚗 y se van 🚗🚗. ¿Cuántos quedan?",options:["2","3","4"],answer:"3"},
+  {type:"choice",title:"Figuras",q:"Señala el círculo.",options:["○","□","△"],answer:"○"},
+  {type:"choice",title:"Figuras",q:"Señala el triángulo.",options:["○","□","△"],answer:"△"}
+ ]}
+];
+
+let day=0, task=0, score=0, answered=0;
+const screen=document.getElementById("screen"), daysEl=document.getElementById("days"), bar=document.getElementById("bar");
+
+function renderDays(){
+ daysEl.innerHTML=days.map((d,i)=>`<button class="day ${i===day?'active':''}" onclick="goDay(${i})">${d.name}</button>`).join("");
+}
+function render(){
+ renderDays();
+ const tasks=days[day].tasks;
+ if(task>=tasks.length){summary();return}
+ const t=tasks[task];
+ let html=`<h2>${t.title}</h2><div class="instruction">${t.q}</div><div class="task">`;
+ if(t.show) html+=`<div class="big">${t.show}</div>`;
+ if(t.items) html+=`<div class="items">${t.items}</div>`;
+ if(t.coins) html+=`<div class="coins">${t.coins}</div>`;
+ if(t.type==="choice") html+=`<div class="options">${t.options.map(o=>`<button class="choice" onclick="select(this,'${o.replaceAll("'","\\\\'")}')">${o}</button>`).join("")}</div>`;
+ if(t.type==="calc") html+=`<div class="answerline"><input id="ans" inputmode="numeric" aria-label="Respuesta"></div><div class="options"><button class="primary" onclick="checkInput()">Comprobar</button></div>`;
+ if(t.type==="two") html+=`<div class="options">${t.labels.map((l,i)=>`<label>${l}<br><input id="a${i}" inputmode="numeric"></label>`).join("")}</div><div class="options"><button class="primary" onclick="checkTwo()">Comprobar</button></div>`;
+ html+=`<div class="feedback" id="feedback"></div><div class="hint">Puedes usar una recta numérica, contar con los dedos o pedir ayuda.</div></div>`;
+ html+=`<div class="actions"><button class="secondary" onclick="prev()">← Anterior</button><button class="secondary" onclick="next()">Siguiente →</button></div>`;
+ screen.innerHTML=html; updateBar();
+}
+function feedback(ok){
+ const f=document.getElementById("feedback"); f.className="feedback "+(ok?"ok":"bad");
+ f.textContent=ok?"¡Muy bien! ⭐":"Casi. Vamos a intentarlo otra vez.";
+ if(ok){score++; answered++; setTimeout(next,700);}
+}
+function select(btn,val){
+ document.querySelectorAll(".choice").forEach(b=>b.classList.remove("selected"));
+ btn.classList.add("selected");
+ const t=days[day].tasks[task]; feedback(val===t.answer);
+}
+function checkInput(){
+ const t=days[day].tasks[task], v=document.getElementById("ans").value.trim();
+ if(v===""){document.getElementById("feedback").textContent="Escribe una respuesta.";return}
+ feedback(v===t.answer);
+}
+function checkTwo(){
+ const t=days[day].tasks[task], ok=t.answers.every((a,i)=>document.getElementById("a"+i).value.trim()===a);
+ feedback(ok);
+}
+function next(){if(task<days[day].tasks.length) task++; render()}
+function prev(){if(task>0){task--;render()}}
+function goDay(i){day=i;task=0;render()}
+function updateBar(){
+ const total=days[day].tasks.length;
+ bar.style.width=(task/total*100)+"%";
+}
+function summary(){
+ const total=days[day].tasks.length;
+ screen.innerHTML=`<div class="summary"><h2>🎉 Día terminado</h2><p>Has terminado las actividades de <b>${days[day].name}</b>.</p><div class="score">${score} ⭐</div><p>¡Buen trabajo!</p><div class="options"><button class="primary" onclick="goDay(${day<2?day+1:day})">${day<2?"Continuar al siguiente día":"Volver a empezar"}</button><button class="secondary" onclick="goDay(${day})">Repetir actividades</button></div></div>`;
+ bar.style.width="100%";
+}
+render();
+</script>
+</body>
+</html>
